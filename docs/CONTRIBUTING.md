@@ -1,7 +1,4 @@
-# Conventional Commit Messages [![starline](https://raw.githubusercontent.com/qoomon/qoomon/refs/heads/main/starlines/qoomon/5dfcdf8eec66a051ecd85625518cfd13@gist/starline.svg)](https://github.com/qoomon/starline)
-![#licence](https://img.shields.io/badge/License-MIT-blue)
-![GitHub Gist stars](https://img.shields.io/github/gist/stars/5dfcdf8eec66a051ecd85625518cfd13)
-
+# Conventional Commit Messages
 
 See how [a minor change](#examples) to your commit message style can make a difference. 
 
