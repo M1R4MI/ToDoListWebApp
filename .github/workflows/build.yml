@@ -1,0 +1,64 @@
+name: SonarQube
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [opened, synchronize, reopened]
+  workflow_dispatch: {}
+  
+jobs:
+  sonarcloud_branch:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Restore Backend Dependencies
+        run: dotnet restore ./Backend/ToDoList.sln
+
+      - name: Install xmldocmd
+        run: dotnet tool install xmldocmd -g
+
+      - name: Install coverlet.console
+        run: dotnet tool install -g coverlet.console
+
+      - name: Install SonarScanner
+        run: dotnet tool install --global dotnet -sonarscanner
+
+      - name: Set SonarCloud Token
+        run: echo "SONAR_TOKEN=${{ secrets.SONAR_TOKEN }}" >> $GITHUB_ENV
+
+      - name: SonarScanner Begin
+        run: |
+          dotnet sonarscanner begin /v:"ToDoListWebApp" /k:"m1r4mi_ToDoListWebApp" /o:"m1r4mi" /d:sonar.token="${{secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths="./coverage/coverage.opencover.xml" /d:sonar.coverage.exclusions="**/Persistence/Migrations/**"
+
+      - name: Build
+        run: dotnet build ./Backend/ToDoList.sln --configuration Release
+
+     # - name: Run Unit Tests
+      
+      - name: SonarScanner End
+        if: always()
+        run: dotnet sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
+
+      - name: Publish Code Coverage Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Code Coverage Report
+          path: |
+            ./coverage/coverage.opencover.xml
