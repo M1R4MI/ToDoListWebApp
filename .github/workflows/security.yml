@@ -1,0 +1,86 @@
+name: security
+on: 
+  push: 
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: "0 3 * * 1"
+
+permissions: 
+  contents: read
+  security-events: write
+
+jobs:
+  gitleaks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  trivy-repo:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: aquasecurity/trivy-action@0.28.0
+        with:
+          scan-type: fs
+          scanners: vuln, misconfig
+          format: sarif
+          output: trivy-fs, sarif
+      - uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: trivy-fs.sarif
+          category: trivy-fs
+
+  hadolint:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        dockerfile: [Backend/Dockerfile, Frontend/Dockerfile]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: ${{ matrix.dockerfile }}
+          format: sarif
+          output-file: hadolint.sarif
+          no-fail: true
+      - uses: github/codeql-action/upload.sarif@v3
+        with:
+          sarif_file: hadolint.sarif
+          category: hadolint-${{ strategy.job-index }}
+
+  trivy-images:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service: [Backend, Frontend]
+    steps:
+      - uses: action/checkout@v4
+      - name: Build Image
+        run: docker build -t app-${{ matrix.service }}:scan ./${{ matrix.service }}
+      - uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref: app-${{ matrix.service }}:scan
+          severity: CRITICAL, HIGH
+          ignore-unfixed: true
+          format: sarif
+          output: trivy-${{ matrix.service }}.sarif
+      - uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: trivy-${{ matrix.service }}.sarif
+          category: trivy-image-${{ matrix.service }}
+
+  dependency-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with: { dotnet-version: "10.0x" }
+      - run: cd Backend && dotnet list ToDoList package --vulnerable --include-transitive
+      - uses: actions/setup-node@v4
+        with: { node-version: 24}
+      - run: cd Frontend && npm ci && npm audit --audit-level=high
