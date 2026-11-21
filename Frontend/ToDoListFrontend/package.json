@@ -27,6 +27,7 @@
     "@angular/cli": "^22.0.3",
     "@angular/compiler-cli": "^22.0.0",
     "@eslint/js": "^10.0.1",
+    "@vitest/coverage-v8": "^4.1.12",
     "angular-eslint": "22.7.0",
     "eslint": "^10.14.0",
     "eslint-config-prettier": "^10.1.8",
@@ -45,7 +46,12 @@
     "msgpackr-extract@3.0.7": true
   },
   "lint-staged": {
-    "*.ts": ["eslint --fix", "prettier --write"],
-    "*.{ html, css, json, md }": ["prettier --write"]
+    "*.ts": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{ html, css, json, md }": [
+      "prettier --write"
+    ]
   }
 }
