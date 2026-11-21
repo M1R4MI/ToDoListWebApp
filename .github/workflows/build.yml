@@ -39,7 +39,7 @@ jobs:
         working-directory: Frontend/ToDoListFrontend
 
       - name: Frontend tests with coverage
-        run: npm test -- --watch=false --browsers=ChromeHeadless --code-coverage
+        run: npm test -- --no-watch --coverage --coverage-reporters=lcov
         working-directory: Frontend/ToDoListFrontend
 
       - name: Restore Backend Dependencies
