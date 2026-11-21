@@ -32,15 +32,15 @@ jobs:
         with:
           node-version: 24
           cache: npm
-          cache-dependency-path: Frontend/package-lock.json
+          cache-dependency-path: ./Frontend/ToDoListFrontend/package-lock.json
 
       - name: Install frontend dependencies
         run: npm ci
-        working-directory: Frontend
+        working-directory: ./Frontend/ToDoListFrontend
 
       - name: Frontend tests with coverage
         run: npm test -- --watch=false --browsers=ChromeHeadless --code-coverage
-        working-directory: Frontend
+        working-directory: ./Frontend/ToDoListFrontend
 
       - name: Restore Backend Dependencies
         run: dotnet restore ./Backend/ToDoList.sln
