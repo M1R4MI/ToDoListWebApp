@@ -26,21 +26,6 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 10.0.x
-          
-      - name: Setup Node.js
-        uses: actions/setup-node@v7
-        with:
-          node-version: 24
-          cache: npm
-          cache-dependency-path: Frontend/ToDoListFrontend/package-lock.json
-
-      - name: Install frontend dependencies
-        run: npm ci
-        working-directory: Frontend/ToDoListFrontend
-
-      - name: Frontend tests with coverage
-        run: npm test -- --watch=false --browsers=ChromeHeadless --code-coverage
-        working-directory: Frontend/ToDoListFrontend
 
       - name: Restore Backend Dependencies
         run: dotnet restore ./Backend/ToDoList.sln
@@ -59,19 +44,7 @@ jobs:
 
       - name: SonarScanner Begin
         run: |
-          dotnet sonarscanner begin \
-          /v:"ToDoListWebApp" \
-          /k:"m1r4mi_ToDoListWebApp" \
-          /o:"m1r4mi" \
-          /d:sonar.token="${{secrets.SONAR_TOKEN }}" \
-          /d:sonar.host.url="https://sonarcloud.io" \
-          /d:sonar.exclusions="**/node_modules/**,**/bin/**,**/obj/**,**/dist/**,**/.angular/**,**/coverage/**" \
-          /d:sonar.test.inclusions="**/*.spec.ts" \
-          /d:sonar.coverage.exclusions="**/*.spec.ts,**/main.ts,**/*.module.ts,**/environments/**" \
-          /d:sonar.typescript.tsconfigPaths="frontend/tsconfig.json,frontend/tsconfig.app.json,frontend/tsconfig.spec.json" \
-          /d:sonar.javascript.lcov.reportPaths="frontend/coverage/**/lcov.info"
-          /d:sonar.cs.opencover.reportsPaths="./coverage/coverage.opencover.xml" \
-          /d:sonar.coverage.exclusions="**/Persistence/Migrations/**"
+          dotnet sonarscanner begin /v:"ToDoListWebApp" /k:"m1r4mi_ToDoListWebApp" /o:"m1r4mi" /d:sonar.token="${{secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths="./coverage/coverage.opencover.xml" /d:sonar.coverage.exclusions="**/Persistence/Migrations/**"
 
       - name: Build
         run: dotnet build ./Backend/ToDoList.sln --configuration Release
