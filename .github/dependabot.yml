@@ -1,0 +1,42 @@
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/Fronend"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 6
+    groups:
+      angular:
+        patterns: ["@angular/*", "@angular-devkit/*"]
+      npm-minor-patch:
+        update-types: [minor, patch]
+
+  - package-ecosystem: "nuget"
+    directory: "/Backend"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 6
+    groups:
+      nuget-minor-patch:
+        update-types: [minor, patch]
+
+  - package-ecosystem: "docker"
+    directory: "/Backend"
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "docker-compose"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+
+ignore:
+  - dependency-name: "postgres"
+    update-types: ["version-update:semver-major"]
