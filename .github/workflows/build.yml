@@ -59,19 +59,7 @@ jobs:
 
       - name: SonarScanner Begin
         run: |
-          dotnet sonarscanner begin \
-          /v:"ToDoListWebApp" \
-          /k:"m1r4mi_ToDoListWebApp" \
-          /o:"m1r4mi" \
-          /d:sonar.token="${{secrets.SONAR_TOKEN }}" \
-          /d:sonar.host.url="https://sonarcloud.io" \
-          /d:sonar.exclusions="**/node_modules/**,**/bin/**,**/obj/**,**/dist/**,**/.angular/**,**/coverage/**" \
-          /d:sonar.test.inclusions="**/*.spec.ts" \
-          /d:sonar.coverage.exclusions="**/*.spec.ts,**/main.ts,**/*.module.ts,**/environments/**" \
-          /d:sonar.typescript.tsconfigPaths="frontend/tsconfig.json,frontend/tsconfig.app.json,frontend/tsconfig.spec.json" \
-          /d:sonar.javascript.lcov.reportPaths="frontend/coverage/**/lcov.info"
-          /d:sonar.cs.opencover.reportsPaths="./coverage/coverage.opencover.xml" \
-          /d:sonar.coverage.exclusions="**/Persistence/Migrations/**"
+          dotnet sonarscanner begin /v:"ToDoListWebApp" /k:"m1r4mi_ToDoListWebApp" /o:"m1r4mi" /d:sonar.token="${{secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.exclusions="**/node_modules/**,**/bin/**,**/obj/**,**/dist/**,**/.angular/**,**/coverage/**" /d:sonar.test.inclusions="**/*.spec.ts" /d:sonar.typescript.tsconfigPaths="frontend/tsconfig.json,frontend/tsconfig.app.json,frontend/tsconfig.spec.json" /d:sonar.javascript.lcov.reportPaths="frontend/coverage/**/lcov.info" /d:sonar.cs.opencover.reportsPaths="./coverage/coverage.opencover.xml" /d:sonar.coverage.exclusions="**/Persistence/Migrations/**,**/*.spec.ts,**/main.ts,**/*.module.ts,**/environments/**"
 
       - name: Build
         run: dotnet build ./Backend/ToDoList.sln --configuration Release
